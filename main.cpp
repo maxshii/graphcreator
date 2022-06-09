@@ -25,6 +25,7 @@ void addVertex(Vertex* arr[], char label);
 void rmVertex(Vertex* arr[], char label);
 void addEdge(Vertex* arr[], char label1, char label2);
 void rmEdge(Vertex* arr[], char label1, char label2);
+void shortestPath(Vertex* arr[], char start, char end);
 
 int main()
 {
@@ -47,10 +48,11 @@ int main()
   addEdge(VertexList, 'A', 'C');
 
   print(VertexList);
-  cout << endl;
-  rmVertex(VertexList, 'A');
+  shortestPath(VertexList, 'A', 'C');
+  //cout << endl;
+  //rmVertex(VertexList, 'A');
 
-  print(VertexList);
+  //print(VertexList);
 
 }
 
@@ -250,21 +252,23 @@ void rmEdge(Vertex* arr[], char label1, char label2)
   }
 }
 
-Node* shortestPath(Vertex arr[], char start, char end)
+void shortestPath(Vertex* arr[], char start, char end)
 {
-  char unvisited[26]; //char array of unvisited vertexes
+  bool unvisited[26]; //char array of unvisited vertexes
   int tentativeDist[26]; //int array with index 0 representing vertex A, index 1 = v B, etc.
   char shortestPaths[26][27];
   const int INFINITE = -1;
   
-  int j = 0;
   for(int i = 0; i < 26; i++)
   {
 
     if(arr[i] != NULL)
     {
-      unvisted[j] = arr[i]->label; //add label of unvisted vertex to unvisted
-      j++;
+      unvisited[i] = true; //make index of label unvisited
+    }
+    else
+    {
+      unvisited[i] = false;
     }
     
     if(start-'A' == i)
@@ -273,16 +277,32 @@ Node* shortestPath(Vertex arr[], char start, char end)
     }
     else
     {
-      tenativeDist[i] == INFINITE;
+      tentativeDist[i] = INFINITE;
     }
 
     for(int z = 0; z < 26; z++)
     {
-      shortestPaths[i] = '\0';
+      shortestPaths[i][z] = '\0';
     }
   }
 
   int current = start - 'A';
+  while(true)
+  {
+    int cont = 0;
+    for(int i = 0; i < 26; i++)
+    {
+      if(unvisited[i] == true)
+      {
+        cont++;
+      }
+    }
+    if(cont <= 0)
+    {
+      break;
+    }
+
+    
   Node* currentNode = arr[current]->list; //currentNode represents linked list of vertexes adjacent to current
   while(currentNode != NULL)
   {
@@ -293,29 +313,62 @@ Node* shortestPath(Vertex arr[], char start, char end)
     //find dist from current to adjacent
     //replace path and dist if the dist is less than dist in tentativeDist
 
-    if(shortestPaths[adjIndex][0] == NULL)
+    /*if(shortestPaths[adjIndex][0] == '\0')
     {
       shortestPaths[adjIndex][0] = adjacent;
-      tenativeDist[adjIndex] = currentNode->weight;
+      tentativeDist[adjIndex] = currentNode->weight;
     }
     else
+    {*/
+    if(unvisited[adjIndex] == true)
     {
-      int i = 0;
-      while(shortestPaths[adjIndex][i] != '\0')
+      if(tentativeDist[current] + currentNode->weight < tentativeDist[adjIndex] || tentativeDist[adjIndex] == INFINITE) //if distance start to current to adjacent is less than tentativeDist to adjacent
       {
-        i++;
+
+        //replace tenativepath to adjacent with path to current to adjacent
+        int i = 0;
+        while(shortestPaths[current][i] != '\0')
+        {
+          shortestPaths[adjIndex][i] = shortestPaths[current][i];
+          i++;
+        }
+        shortestPaths[adjIndex][i] = adjacent;
+        shortestPaths[adjIndex][i+1] = '\0';
+
+        //replace tenativeDist with distance to current to adjacent
+        tentativeDist[adjIndex] = tentativeDist[current] + currentNode->weight;
       }
-      shortestPaths[adjIndex][i] = adjacent;
-      tentativeDist[adjIndex] = tentativeDist[adjIndex] + currentNode->weight;
-    }
-    
+      }
+    //}
+    currentNode = currentNode->next;
   }
+
+  
+    
+    unvisited[current] = false;
+    
+  
 
   int smallestTent = tentativeDist[0];
-
-  for(int i = 0; i < 26; i++)
+  int next = 0;
+  for(int i = 1; i < 26; i++)
   {
-    
+    if(smallestTent > tentativeDist[i] && unvisited[i] == true)
+    {
+      smallestTent = tentativeDist[i];
+      next = i;
+      
+    }
   }
-  
+cout << next;
+    current = next;
+
+    if(unvisited[current] == false || tentativeDist[current] == INFINITE)
+    {
+      break;
+    }
+  }
+
+  cout<<shortestPaths[end][0] << ": ";
+  cout << tentativeDist[end];
 }
