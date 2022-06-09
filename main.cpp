@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <cstring>
 
 using namespace::std;
 
@@ -43,16 +44,97 @@ int main()
   addVertex(VertexList, 'A');
   addVertex(VertexList, 'B');
   addVertex(VertexList, 'C');
+  addVertex(VertexList, 'D');
+  addVertex(VertexList, 'E');
   print(VertexList);
+  cout << "Edge AB";
   addEdge(VertexList, 'A', 'B');
+    cout << "Edge AC";
+
   addEdge(VertexList, 'A', 'C');
+    cout << "Edge AD";
+
+  addEdge(VertexList, 'A', 'D');
+    cout << "Edge AE";
+
+  addEdge(VertexList, 'B', 'E');
+    cout << "Edge CD";
+
+  addEdge(VertexList, 'C', 'D');
+
+  shortestPath(VertexList, 'A', 'C');
+    shortestPath(VertexList, 'A', 'D');
 
   print(VertexList);
-  shortestPath(VertexList, 'A', 'C');
-  //cout << endl;
-  //rmVertex(VertexList, 'A');
+  cout << "remove A\n";
+  rmVertex(VertexList, 'A');
+  print(VertexList);
+  cout<<"remove edge BE\n";
+  rmEdge(VertexList, 'B', 'E');
+  print(VertexList);
 
+  
+  //std::cout << endl;
+  //rmVertex(VertexList, 'A');
+/*
   //print(VertexList);
+  /*while (true) {
+    
+    std::cout << "Instructions: Enter a number or file name or addVertex, addEdge, rmVertex, rmEdge, print, or quit\n";
+		char input[80];
+		cin.getline(input, 80, '\n');
+
+    if(strcmp(input, "rmEdge") == 0)
+    {
+      char label1;
+      char label2;
+      std::cout << "Enter first vertex (A-Z): ";
+      cin >> label1;
+      std::cout << "Enter second vertex: ";
+      cin >> label2;
+     rmEdge(VertexList, label1, label2);
+    }
+    else if(strcmp(input, "rmVertex") == 0)
+    {
+      char label1;
+
+      std::cout << "Enter vertex(A-Z): ";
+      cin >> label1;
+
+      rmVertex(VertexList, label1);
+    }
+    else if(strcmp(input, "addEdge") == 0)
+    {
+      char label1;
+      char label2;
+      std::cout << "Enter first vertex(A-Z): ";
+      cin >> label1;
+      std::cout << "Enter second vertex: ";
+      cin >> label2;
+      
+
+      addEdge(VertexList, label1, label2);
+    }
+    
+    else if(strcmp(input, "addVertex") == 0)
+    {
+      char label1;
+
+      std::cout << "Enter vertex(A-Z): ";
+      cin >> label1;;
+      addVertex(VertexList, label1);
+    
+    }
+    else if(strcmp(input, "print") == 0)
+    {
+      print(VertexList);
+    }
+    else if(strcmp(input, "quit") == 0)
+    {
+      break;
+    }
+
+  }*/
 
 }
 
@@ -64,15 +146,15 @@ void print(Vertex* arr[])
       {
         if(arr[i]->label != '\0')
         {
-          cout << arr[i]->label << ": ";
+          std::cout << arr[i]->label << ": ";
           Node* adj = arr[i]->list;
           while(adj != NULL)
           {
-            cout << adj->label << "(" << adj->weight << ")  ";
+            std::cout << adj->label << "(" << adj->weight << ")  ";
             adj = adj->next;
           }
         }
-        cout << endl;
+        std::cout << endl;
       }  
     }
 }
@@ -84,12 +166,12 @@ void addVertex(Vertex* arr[], char label)
     Vertex* v = new Vertex;
     v->label = label;
     v->list = NULL;
-    //cout << label - 'a';
+    //std::cout << label - 'a';
     arr[label-'A'] = v;
   }
   else
   {
-    cout << "Vector already exists.\n";
+    std::cout << "Vector already exists.\n";
   }
 }
 
@@ -110,7 +192,7 @@ void rmVertex(Vertex* arr[], char label)
   }
   else
   {
-    cout << label << " not found.\n";
+    std::cout << label << " not found.\n";
   }
 }
 
@@ -121,9 +203,10 @@ void addEdge(Vertex* arr[], char label1, char label2)
 
   if(arr[index1] != NULL && arr[index2] != NULL)
   {
-    cout << "Enter weight: ";
+    std::cout << "Enter weight: ";
     int weight = 0;
     cin >> weight;
+    cin.clear();
 
     //add node representing edge from label 1 to label2
     Node* current = arr[index1]->list;
@@ -131,6 +214,7 @@ void addEdge(Vertex* arr[], char label1, char label2)
     {
       Node* n = new Node;
       n->label = label2;
+      n->next = NULL;
       n->weight = weight;
       arr[index1]->list = n;
     }
@@ -141,7 +225,8 @@ void addEdge(Vertex* arr[], char label1, char label2)
         current = current->next;
       }
       Node* n = new Node;
-      n->label = label2;
+      n->label = label2;     
+      n->next = NULL;
       n->weight = weight;
       current->next = n;
     }
@@ -152,6 +237,7 @@ void addEdge(Vertex* arr[], char label1, char label2)
     {
       Node* n = new Node;
       n->label = label1;
+      n->next = NULL;
       n->weight = weight;
       arr[index2]->list = n;
     }
@@ -163,6 +249,7 @@ void addEdge(Vertex* arr[], char label1, char label2)
       }
       Node* n = new Node;
       n->label = label1;
+      n->next = NULL;
       n->weight = weight;
       current->next = n;
     }
@@ -248,7 +335,7 @@ void rmEdge(Vertex* arr[], char label1, char label2)
   }
   else
   {
-    cout << "Invalid vertexes.\n";
+    std::cout << "Invalid vertexes.\n";
   }
 }
 
@@ -349,18 +436,20 @@ void shortestPath(Vertex* arr[], char start, char end)
     
   
 
-  int smallestTent = tentativeDist[0];
+  int smallestTent = INFINITE;
   int next = 0;
   for(int i = 1; i < 26; i++)
   {
-    if(smallestTent > tentativeDist[i] && unvisited[i] == true)
+    if(smallestTent > tentativeDist[i] || smallestTent == INFINITE )
     {
-      smallestTent = tentativeDist[i];
-      next = i;
-      
+      if(unvisited[i] == true)
+      {
+        smallestTent = tentativeDist[i];
+        next = i;
+      }
     }
   }
-cout << next;
+//std::cout << next;
     current = next;
 
     if(unvisited[current] == false || tentativeDist[current] == INFINITE)
@@ -369,6 +458,12 @@ cout << next;
     }
   }
 
-  cout<<shortestPaths[end][0] << ": ";
-  cout << tentativeDist[end];
+  int inting = 0;
+  std::cout << "Shortest Path: " << start;
+ while(shortestPaths[end-'A'][inting] != '\0')
+ {
+  std::cout<< shortestPaths[end-'A'][inting];
+  inting++;
+ }
+  std::cout << ": " << tentativeDist[end-'A'] << endl;
 }
